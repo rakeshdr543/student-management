@@ -5,10 +5,21 @@ require('express-async-errors')
 const helmet = require('helmet')
 const cors = require('cors')
 const xss = require('xss-clean')
-const rateLimiter = require('express-rate-limit')
+// const rateLimiter = require('express-rate-limit')
 
 const express = require('express')
 const app = express()
+
+const fileUpload = require('express-fileupload');
+
+// USE V2
+const cloudinary=require('cloudinary').v2
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
 
 const connectDB = require('./db/connect')
 // routers
@@ -29,9 +40,13 @@ app.use(helmet())
 app.use(cors())
 app.use(xss())
 
+app.use(express.static('./public'))
+
+app.use(express.json());
+app.use(fileUpload({useTempFiles:true}))
 
 // routes
-app.use('/api/v1/student', studentRouter)
+app.use('/api/v1/students', studentRouter)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
