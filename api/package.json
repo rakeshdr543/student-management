@@ -1,5 +1,5 @@
 {
-  "name": "06-jobs-api",
+  "name": "student-management-api",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@sendgrid/mail": "^7.4.6",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -24,17 +23,12 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.6",
     "morgan": "^1.10.0",
-    "nodemailer": "^6.6.3",
     "rate-limiter": "^0.2.0",
-    "swagger-ui-express": "^4.1.6",
     "validator": "^13.6.0",
     "xss-clean": "^0.1.1",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.9"
-  },
-  "engines": {
-    "node": "14.x"
   }
 }
