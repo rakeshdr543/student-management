@@ -1,84 +1,72 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios'
+
+import Student from './components/Student';
+
 const rootUrl = 'http://localhost:5000';
 
 function App() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [students,setStudents]=useState([])
+  const [loading,setLoading]=useState(false)
+  const [page, setPage] = useState(1)
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email || !password) return;
-    const user = { email, password };
+  const nextPage = () => {
+    setPage((oldPage) => {
+      let nextPage = oldPage + 1
+      if (nextPage > students.length - 1) {
+        nextPage = 1
+      }
+      return nextPage
+    })
+  }
+  const prevPage = () => {
+    setPage((oldPage) => {
+      let prevPage = oldPage - 1
+      if (prevPage < 1) {
+        prevPage = 1
+      }
+      return prevPage
+    })
+  }
 
-    try {
-      const url = `${rootUrl}/api/v1/auth/login`;
-      // const url = `/api/v1/auth/login`;
-      await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify(user),
-      });
-      setPassword('');
-      setEmail('');
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchTesting = async () => {
-    const url = `${rootUrl}/api/v1`;
-    // const url = `/api/v1`;
-    await fetch(url);
-  };
-  const fetchLogout = async () => {
-    const url = `${rootUrl}/api/v1/auth/logout`;
-    // const url = `/api/v1/auth/logout`;
-    await fetch(url);
-  };
-
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true)
+      const url = `${rootUrl}/api/v1/students?page=${page}`;
+      // const url = `/api/v1`;
+     const fetchedProducts=await axios.get(url)
+     console.log(fetchedProducts.data.students)
+     setLoading(false)
+     setStudents(fetchedProducts?.data?.students)
+    };
+  fetchProducts()
+  }, [page])
+console.log(students)
   return (
-    <>
-      <form className='form' onSubmit={handleSubmit}>
-        <h4>login form</h4>
-        <div className='form-row'>
-          <label htmlFor='email' className='form-label'>
-            Email
-          </label>
-          <input
-            type='email'
-            className='form-input email-input'
-            name='email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className='form-row'>
-          <label htmlFor='password' className='form-label'>
-            Password
-          </label>
-          <input
-            type='password'
-            name='password'
-            className='form-input password-input'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type='submit' className='btn btn-block submit-btn'>
-          submit
-        </button>
-      </form>
-      <div className='container'>
-        <button className='btn testing-btn' onClick={fetchTesting}>
-          Testing
-        </button>
-        <button className='btn logout-btn' onClick={fetchLogout}>
-          Logout
-        </button>
+    <main>
+      <div className='section-title'>
+        <h1>{loading ? 'loading...' : 'Student Management'}</h1>
+        <div className='underline'></div>
       </div>
-    </>
+      <section className='followers'>
+        <div className='container'>
+          {students?.length && students?.map((student) => {
+            return <Student key={student._id} {...student} />
+          })}
+        </div>
+        {!loading && (
+          <div className='btn-container'>
+            <button className='prev-btn' onClick={prevPage}>
+              prev
+            </button>
+            {page}
+            <button className='next-btn' onClick={nextPage}>
+              next
+            </button>
+          </div>
+        )}
+      </section>
+    </main>
   );
 }
 
